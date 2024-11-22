@@ -32,7 +32,6 @@ Este projeto tem como objetivo implementar e configurar um ambiente completo de 
     Aplicação Flask
 
         URL: http://localhost:5000
-        A aplicação exibirá a mensagem: OK
 
 Banco de Dados MariaDB
 
