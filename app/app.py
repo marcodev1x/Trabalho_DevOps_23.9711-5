@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+import random
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ class Aluno(db.Model):
     def to_dict(self):
         return {"id": self.id, "nome": self.nome, "ra": self.ra}
 
-# Rotas
+# Rota de cadastro de alunos
 @app.route('/alunos', methods=['GET'])
 def get_alunos():
     alunos = Aluno.query.all()
@@ -39,10 +40,19 @@ def add_aluno():
         db.session.rollback()
         return jsonify({"error": "Erro ao salvar aluno. RA já existente?"}), 400
 
-# Inicializar o Banco de Dados
+# Configuração para rodar antes da primeira requisição
 @app.before_first_request
 def setup_database():
     db.create_all()
+
+# Criar um aluno automaticamente durante o inicialização
+@app.before_first_request
+def create_random_student():
+    random_ra = str(random.randint(100000, 999999))
+    aluno = Aluno(nome="Aluno Teste", ra=random_ra)
+    db.session.add(aluno)
+    db.session.commit()
+    print(f"Aluno {aluno.nome} com RA {aluno.ra} criado.")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
