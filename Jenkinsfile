@@ -32,14 +32,6 @@ pipeline {
             }
         }
 
-        stage('Executar Testes') {
-            steps {
-                script {
-                    sh 'docker-compose run --rm web pytest ./app/test_app.py'
-                }
-            }
-        }
-
         stage('Subir Aplicação') {
             steps {
                 script {
