@@ -8,15 +8,16 @@ pipeline {
     }
 
     stages {
-        stage('Preparação') {
+        stage('Clonar Repositório') {
             steps {
                 script {
+  
                     git url: 'https://github.com/marcodev1x/Trabalho_DevOps_23.9711-5.git', branch: 'main'
                 }
             }
         }
 
-        stage('Instalação de Dependências') {
+        stage('Construir Imagens') {
             steps {
                 script {
                     sh 'docker-compose -f docker-compose.yml build'
@@ -24,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Rodar Testes') {
+        stage('Executar Testes') {
             steps {
                 script {
                     sh 'docker-compose run --rm web pytest app/test_app.py'
@@ -32,18 +33,18 @@ pipeline {
             }
         }
 
-        stage('Build e Deploy') {
+        stage('Subir Aplicação') {
             steps {
                 script {
-                    sh 'docker-compose up -d' // Sobe os containers em segundo plano
+                    sh 'docker-compose up -d'
                 }
             }
         }
 
-        stage('Monitoramento com Prometheus e Grafana') {
+        stage('Configurar Monitoramento') {
             steps {
                 script {
-                    echo "Monitoramento configurado no Prometheus e Grafana"
+                    echo 'Monitoramento configurado com Prometheus e Grafana'
                 }
             }
         }
@@ -51,7 +52,7 @@ pipeline {
 
     post {
         always {
-            // Limpeza, se necessário
+            sh 'docker-compose down'
             cleanWs()
         }
 

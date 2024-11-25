@@ -1,4 +1,4 @@
 flask==2.2.5
-flask-sqlalchemy
-pymysql
+Flask-SQLAlchemy==3.0.5
+pymysql==1.0.3
 pytest
