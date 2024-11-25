@@ -51,11 +51,6 @@ pipeline {
     }
 
     post {
-        always {
-            sh 'docker-compose down'
-            cleanWs()
-        }
-
         success {
             echo 'Pipeline executada com sucesso!'
         }
