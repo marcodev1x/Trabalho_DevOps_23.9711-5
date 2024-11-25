@@ -9,6 +9,8 @@ services:
       - ./app:/app
     depends_on:
       - db
+    networks:
+      - pipeline_network
 
   db:
     image: mariadb:10.6
@@ -21,6 +23,12 @@ services:
       MYSQL_PASSWORD: devops_password
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - pipeline_network
 
 volumes:
   db_data:
+
+networks:
+  pipeline_network:
+    driver: bridge

@@ -11,11 +11,18 @@ pipeline {
         stage('Clonar Repositório') {
             steps {
                 script {
-  
                     git url: 'https://github.com/marcodev1x/Trabalho_DevOps_23.9711-5.git', branch: 'main'
                 }
             }
         }
+
+        stage('Limpar Containers Antigos') {
+    steps {
+        script {
+            sh 'docker-compose down --remove-orphans'
+        }
+    }
+}
 
         stage('Construir Imagens') {
             steps {
