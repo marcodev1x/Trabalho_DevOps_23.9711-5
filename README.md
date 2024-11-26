@@ -21,34 +21,68 @@ Este projeto tem como objetivo implementar e configurar um ambiente completo de 
 
 ### 1. Subir o Ambiente
 
-1.  Navegue até a pasta raiz do projeto (onde está o arquivo `docker-compose.yml`).
-2.  Execute o comando abaixo para construir as imagens e subir os serviços:
+1. Navegue até a pasta raiz do projeto (onde está o arquivo `docker-compose.yml`).
+2. Execute o comando abaixo para construir as imagens e subir os serviços:
 
-    ```bash
-    docker-compose up --build
-    ```
+   ```bash
+   docker-compose up --build
+   ```
 
-3.  Testar os Serviços
-    Aplicação Flask
+3. **Testar os Serviços**
 
-        URL: http://localhost:5000
+   **Aplicação Flask**
 
-Banco de Dados MariaDB
+   - URL: [`http://localhost:5000`](http://localhost:5000)
 
-    Host: localhost
-    Porta: 3307 (configurada para evitar conflitos com a porta padrão. Pessoalmente tive problemas ao configurar na porta padrão.)
-    Credenciais:
-        Usuário: devops_user
-        Senha: devops_password
-        Banco de Dados: devops
+   **Banco de Dados MariaDB**
 
-4. Acessar a aplicação:
+   - Host: `localhost`
+   - Porta: `3307` (configurada para evitar conflitos com a porta padrão).
+   - Credenciais:
+     - **Usuário**: `devops_user`
+     - **Senha**: `devops_password`
+     - **Banco de Dados**: `devops`
 
-   A aplicação estará disponível em http://localhost:5000. Você pode usar um navegador ou um cliente HTTP (como Postman) para acessar as rotas.
-   GET /alunos: Retorna a lista de alunos.
-   POST /alunos: Cria um novo aluno.
+4. **Acessar a aplicação**
 
-5. Teste automatizado
+   A aplicação estará disponível em [`http://localhost:5000`](http://localhost:5000).  
+   Você pode usar um navegador ou um cliente HTTP (como Postman) para acessar as rotas:
 
-   Um teste automatizado irá acontecer sempre que a aplicação for ao ar, utilizando um usuário com RA aleatório como descrito no arquivo /app/test_app.py.
-   Um log foi adicionado ao console quando este teste acontecer. É possível visualizar este novo usuário na rota GET /alunos.
+   - **GET /alunos**: Retorna a lista de alunos.
+   - **POST /alunos**: Cria um novo aluno.
+
+5. **Teste automatizado**
+
+   - Um teste automatizado será executado sempre que a aplicação for inicializada, utilizando um usuário com RA aleatório, conforme descrito no arquivo `/app/test_app.py`.
+   - Um log será exibido no console quando este teste ocorrer. É possível visualizar o novo usuário na rota **GET /alunos**.
+
+---
+
+## Monitoramento
+
+O ambiente conta com monitoramento configurado via Prometheus e Grafana.
+
+- **Prometheus**
+
+  - URL: [`http://localhost:9090`](http://localhost:9090)
+
+- **Grafana**
+  - URL: [`http://localhost:3000`](http://localhost:3000)
+  - Credenciais padrão:
+    - **Usuário**: `admin`
+    - **Senha**: `admin`
+
+Ao acessar o Grafana, você pode configurar o Prometheus como fonte de dados e importar dashboards personalizados para visualizar métricas detalhadas da aplicação.
+
+---
+
+## CI/CD
+
+O pipeline CI/CD foi configurado utilizando o Jenkins. Para configurar e rodar o Jenkins:
+
+1. Acesse o Jenkins em [`http://localhost:8080`](http://localhost:8080).
+2. Configure o pipeline utilizando o arquivo `Jenkinsfile` fornecido no repositório.
+3. A cada alteração no repositório, o Jenkins irá:
+   - Construir a aplicação.
+   - Rodar testes automatizados.
+   - Implantar a aplicação no ambiente configurado.
