@@ -38,7 +38,7 @@ pipeline {
         stage('Rodar Testes Unitários') {
             steps {
                 script {
-                    sh 'docker-compose run --rm app pytest test_app.py'
+                    sh 'docker-compose run --rm web pytest test_app.py'
                 }
             }
         }

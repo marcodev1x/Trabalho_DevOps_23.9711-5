@@ -9,10 +9,14 @@ class TestApp(unittest.TestCase):
         cls.client = app.test_client()
 
     def setUp(self):
-        db.create_all()
+        self.app_context = app.app_context()
+        self.app_context.push()
+
+        db.session.query(Aluno).delete()
+        db.session.commit()
 
     def tearDown(self):
-        pass
+        self.app_context.pop()
 
     def test_add_aluno(self):
         ra_aleatorio = str(random.randint(100000, 999999))
