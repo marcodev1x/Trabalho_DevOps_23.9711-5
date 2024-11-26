@@ -1,4 +1,4 @@
 flask==2.2.5
 Flask-SQLAlchemy==3.0.5
 pymysql==1.0.3
-pytest
+pytest==7.4.0
