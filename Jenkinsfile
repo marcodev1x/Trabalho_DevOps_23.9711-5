@@ -9,6 +9,7 @@ pipeline {
         GRAFANA_PORT = '3000'
         DB_PORT = '3307'
         NETWORK_NAME = 'pipeline_network'
+        COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
@@ -25,16 +26,20 @@ pipeline {
             steps {
                 script {
                     echo 'Criando rede Docker, se necessário...'
-                    sh "docker network create ${NETWORK_NAME} || true"
+                    sh """
+                    if ! docker network inspect ${NETWORK_NAME} > /dev/null 2>&1; then
+                        docker network create ${NETWORK_NAME}
+                    fi
+                    """
                 }
             }
         }
 
-        stage('Limpar Containers Antigos') {
+        stage('Parar Containers Existentes') {
             steps {
                 script {
-                    echo 'Removendo containers antigos...'
-                    sh 'docker-compose down --remove-orphans'
+                    echo 'Parando containers existentes...'
+                    sh "docker-compose -f ${COMPOSE_FILE} down || true"
                 }
             }
         }
@@ -43,7 +48,7 @@ pipeline {
             steps {
                 script {
                     echo 'Construindo imagens Docker...'
-                    sh 'docker-compose -f docker-compose.yml build'
+                    sh "docker-compose -f ${COMPOSE_FILE} build"
                 }
             }
         }
@@ -52,7 +57,7 @@ pipeline {
             steps {
                 script {
                     echo 'Executando testes unitários...'
-                    sh 'docker-compose run --rm web pytest test_app.py'
+                    sh "docker-compose -f ${COMPOSE_FILE} run --rm web pytest test_app.py || exit 1"
                 }
             }
         }
@@ -61,7 +66,7 @@ pipeline {
             steps {
                 script {
                     echo 'Iniciando aplicação em containers...'
-                    sh 'docker-compose up -d'
+                    sh "docker-compose -f ${COMPOSE_FILE} up -d"
                 }
             }
         }
@@ -74,26 +79,24 @@ pipeline {
                     docker run -d --network ${NETWORK_NAME} \
                         --name prometheus \
                         -p ${PROMETHEUS_PORT}:9090 \
-                        -v \$(pwd)/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
-                        prom/prometheus
+                        -v ${WORKSPACE}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+                        prom/prometheus || true
 
                     docker run -d --network ${NETWORK_NAME} \
                         --name grafana \
                         -p ${GRAFANA_PORT}:3000 \
-                        grafana/grafana
+                        grafana/grafana || true
                     """
                 }
             }
         }
 
-        stage('Configurar Monitoramento') {
+        stage('Verificar Configuração de Monitoramento') {
             steps {
                 script {
-                    echo """
-                    Monitoramento configurado com Prometheus e Grafana.
-                    - Prometheus: http://localhost:${PROMETHEUS_PORT}
-                    - Grafana: http://localhost:${GRAFANA_PORT}
-                    """
+                    echo "Monitoramento configurado com sucesso:"
+                    echo " - Prometheus: http://localhost:${PROMETHEUS_PORT}"
+                    echo " - Grafana: http://localhost:${GRAFANA_PORT}"
                 }
             }
         }
@@ -112,8 +115,9 @@ pipeline {
         }
         always {
             script {
-                echo 'Pipeline finalizada. Realizando limpeza adicional, se necessário.'
-                sh 'docker-compose logs > pipeline_logs.txt || true'
+                echo 'Pipeline finalizada. Capturando logs...'
+                sh "docker-compose -f ${COMPOSE_FILE} logs > pipeline_logs.txt || true"
+                echo 'Logs salvos em pipeline_logs.txt'
             }
         }
     }
