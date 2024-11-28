@@ -76,6 +76,11 @@ pipeline {
                 script {
                     echo 'Iniciando Prometheus e Grafana...'
                     sh """
+
+                    # Remove containers antigos
+                    docker rm -f prometheus || true
+                    docker rm -f grafana || true
+                    
                     docker run -d --network ${NETWORK_NAME} \
                         --name prometheus \
                         -p ${PROMETHEUS_PORT}:9090 \
