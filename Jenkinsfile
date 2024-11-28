@@ -77,16 +77,18 @@ pipeline {
                     echo 'Iniciando Prometheus e Grafana...'
                     sh """
 
-                    # Remove containers antigos
+                    # Remove containers antigos, se existirem
                     docker rm -f prometheus || true
                     docker rm -f grafana || true
                     
+                    # Inicia o Prometheus
                     docker run -d --network ${NETWORK_NAME} \
                         --name prometheus \
                         -p ${PROMETHEUS_PORT}:9090 \
-                        -v ${WORKSPACE}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+                        -v ${WORKSPACE}/prometheus.yml:/etc/prometheus/prometheus.yml \
                         prom/prometheus || true
 
+                    # Inicia o Grafana
                     docker run -d --network ${NETWORK_NAME} \
                         --name grafana \
                         -p ${GRAFANA_PORT}:3000 \
