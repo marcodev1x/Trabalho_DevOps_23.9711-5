@@ -1,4 +1,3 @@
-version: "3"
 services:
   web:
     build:
@@ -46,6 +45,16 @@ services:
     networks:
       - pipeline_network
     restart: always
+
+  mysql-exporter:
+    image: prom/mysqld-exporter
+    container_name: mysql-exporter
+    ports:
+      - "9104:9104"
+    environment:
+      DATA_SOURCE_NAME: "devops_user:devops_password@tcp(db:3306)/"
+    networks:
+      - pipeline_network
 
 volumes:
   db_data:

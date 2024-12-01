@@ -13,7 +13,16 @@ Este projeto tem como objetivo implementar e configurar um ambiente completo de 
 ## Pré-requisitos
 
 - Docker
+  sudo apt update
+  sudo apt install -y docker.io
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  -- Verifique o instalador: docker --version
+
 - Docker Compose
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+  -- Verificque o instalador: docker-compose --version
 
 ---
 
@@ -73,6 +82,14 @@ O ambiente conta com monitoramento configurado via Prometheus e Grafana.
     - **Senha**: `admin`
 
 Ao acessar o Grafana, você pode configurar o Prometheus como fonte de dados e importar dashboards personalizados para visualizar métricas detalhadas da aplicação.
+
+Como Importar o Dashboard no Grafana
+
+    Acesse o Grafana em http://localhost:3000.
+    Faça login com o usuário e senha padrão (admin / admin).
+    No menu lateral, clique em "+" e selecione Import.
+    Clique em Upload .json file e selecione o arquivo dashboard.json que você deseja importar.
+    Após o upload, selecione a fonte de dados (Prometheus) e clique em Import.
 
 ---
 

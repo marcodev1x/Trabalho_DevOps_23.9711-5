@@ -1,0 +1,38 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "alunos-dashboard",
+    "title": "Dashboard de Alunos",
+    "tags": ["alunos", "monitoramento"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "type": "table",
+        "title": "Tabela de Alunos",
+        "targets": [
+          {
+            "target": "alunos_total",
+            "refId": "A",
+            "format": "time_series",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {},
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "options": {
+          "showHeader": true,
+          "showFooter": true
+        }
+      }
+    ]
+  },
+  "overwrite": false
+}
