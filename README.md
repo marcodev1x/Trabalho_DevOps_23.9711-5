@@ -1,5 +1,8 @@
 # Trabalho DevOps - Criação de Ambiente Monitorado com Pipeline CI/CD
 
+## Atenção!
+Este trabalho foi feito com bastante carinho. Espero que atinja os requisitos necessários, obrigado pelas aulas, conhecimento entregue e também alguns momentos engraçados em aula. Abraço professor Wagner!
+
 ## Objetivo
 
 Este projeto tem como objetivo implementar e configurar um ambiente completo de aplicação web com monitoramento e pipeline CI/CD, utilizando as seguintes ferramentas:
