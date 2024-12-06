@@ -1,15 +1,22 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from prometheus_flask_exporter import PrometheusMetrics
 import random
 
 app = Flask(__name__)
 
-# Configuração do Banco de Dados
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://devops_user:devops_password@db:3306/devops'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+metrics = PrometheusMetrics(app)
+
+metrics.counter(
+    "alunos_requests_count",
+    "Contagem de requisições para os endpoints de alunos",
+    labels={"endpoint": lambda: request.endpoint},
+)
 
 class Aluno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,13 +26,17 @@ class Aluno(db.Model):
     def to_dict(self):
         return {"id": self.id, "nome": self.nome, "ra": self.ra}
 
+
 @app.route('/alunos', methods=['GET'])
 def get_alunos():
+    """Retorna a lista de alunos cadastrados."""
     alunos = Aluno.query.all()
     return jsonify([aluno.to_dict() for aluno in alunos])
 
+
 @app.route('/alunos', methods=['POST'])
 def add_aluno():
+    """Adiciona um novo aluno ao sistema."""
     data = request.get_json()
     if not data or not data.get('nome') or not data.get('ra'):
         return jsonify({"error": "Dados inválidos!"}), 400
@@ -39,7 +50,9 @@ def add_aluno():
         db.session.rollback()
         return jsonify({"error": "Erro ao salvar aluno. RA já existente?"}), 400
 
+
 def setup_database():
+    """Inicializa o banco de dados com dados de exemplo."""
     with app.app_context():
         db.create_all()
         if not Aluno.query.first():
@@ -48,6 +61,7 @@ def setup_database():
             db.session.add(aluno)
             db.session.commit()
             print(f"Aluno {aluno.nome} com RA {aluno.ra} criado.")
+
 
 setup_database()
 

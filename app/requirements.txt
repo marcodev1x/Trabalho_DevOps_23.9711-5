@@ -3,3 +3,4 @@ Flask-SQLAlchemy==3.0.5
 pymysql==1.0.3
 pytest==7.4.0
 Werkzeug==2.2.3
+prometheus-flask-exporter==0.20.3

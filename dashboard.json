@@ -1,38 +1,104 @@
 {
   "dashboard": {
     "id": null,
-    "uid": "alunos-dashboard",
-    "title": "Dashboard de Alunos",
-    "tags": ["alunos", "monitoramento"],
+    "uid": null,
+    "title": "Flask Application Dashboard",
+    "tags": ["Flask", "Prometheus"],
     "timezone": "browser",
-    "schemaVersion": 30,
-    "version": 1,
-    "refresh": "10s",
+    "schemaVersion": 37,
+    "version": 0,
+    "refresh": "5s",
     "panels": [
       {
-        "type": "table",
-        "title": "Tabela de Alunos",
+        "type": "graph",
+        "title": "HTTP Requests Total",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "datasource": "Prometheus",
         "targets": [
           {
-            "target": "alunos_total",
-            "refId": "A",
-            "format": "time_series",
-            "instant": true
+            "expr": "http_requests_total",
+            "legendFormat": "{{method}} {{endpoint}}",
+            "interval": ""
           }
         ],
-        "fieldConfig": {
-          "defaults": {
-            "custom": {},
-            "unit": "short"
-          },
-          "overrides": []
+        "xaxis": {
+          "show": true,
+          "mode": "time",
+          "name": null,
+          "values": []
         },
-        "options": {
-          "showHeader": true,
-          "showFooter": true
-        }
+        "yaxes": [
+          {
+            "show": true,
+            "format": "short",
+            "label": "Requests",
+            "logBase": 1
+          },
+          {
+            "show": true
+          }
+        ]
+      },
+      {
+        "type": "singlestat",
+        "title": "Total HTTP Requests",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(http_requests_total)",
+            "interval": ""
+          }
+        ],
+        "format": "short",
+        "valueName": "current",
+        "colorValue": true,
+        "colors": ["#299c46", "#EAB839", "#d44a3a"]
+      },
+      {
+        "type": "table",
+        "title": "HTTP Requests Breakdown",
+        "gridPos": { "x": 0, "y": 8, "w": 24, "h": 10 },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "http_requests_total",
+            "legendFormat": "{{method}} {{endpoint}}",
+            "interval": ""
+          }
+        ],
+        "columns": [
+          {
+            "text": "Method",
+            "value": "method"
+          },
+          {
+            "text": "Endpoint",
+            "value": "endpoint"
+          },
+          {
+            "text": "Requests",
+            "value": "requests"
+          }
+        ]
       }
-    ]
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    }
   },
-  "overwrite": false
+  "overwrite": true
 }
