@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     echo 'Executando testes unitários...'
-                    sh "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} pytest /app/tests/test_app.py || exit 1"
+                    sh "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} pytest /app/test_app.py || exit 1"
                 }
             }
         }
