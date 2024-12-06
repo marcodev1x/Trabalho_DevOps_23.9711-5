@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE_NAME = 'devops-final-app'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io'
-        COMPOSE_FILE = 'docker-compose.yml'
+        DOCKERFILE_PATH = './app/Dockerfile'
     }
 
     stages {
@@ -18,11 +18,11 @@ pipeline {
             }
         }
 
-        stage('Construir Imagens') {
+        stage('Construir Imagem Docker') {
             steps {
                 script {
-                    echo 'Construindo imagens Docker...'
-                    sh "docker-compose -f ${COMPOSE_FILE} build"
+                    echo 'Construindo imagem Docker...'
+                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} -f ${DOCKERFILE_PATH} ./app"
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     echo 'Executando testes unitários...'
-                    sh "docker-compose -f ${COMPOSE_FILE} run --rm web pytest test_app.py || exit 1"
+                    sh "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} pytest test_app.py || exit 1"
                 }
             }
         }
@@ -50,9 +50,8 @@ pipeline {
         }
         always {
             script {
-                echo 'Pipeline finalizada. Capturando logs...'
-                sh "docker-compose -f ${COMPOSE_FILE} logs > pipeline_logs.txt || true"
-                echo 'Logs salvos em pipeline_logs.txt'
+                echo 'Pipeline finalizada. Removendo imagens Docker...'
+                sh "docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} || true"
             }
         }
     }
