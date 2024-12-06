@@ -6,6 +6,9 @@ pipeline {
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io'
         DOCKERFILE_PATH = './app/Dockerfile'
+        COMPOSE_FILE = './docker-compose.yml'
+        PROMETHEUS_CONFIG = './monitoring/prometheus.yml'
+        GRAFANA_DASHBOARD_PATH = './monitoring/grafana_dashboards'
     }
 
     stages {
@@ -31,7 +34,31 @@ pipeline {
             steps {
                 script {
                     echo 'Executando testes unitários...'
-                    sh "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} pytest test_app.py || exit 1"
+                    sh "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} pytest /app/tests/test_app.py || exit 1"
+                }
+            }
+        }
+
+        stage('Deploy com Docker Compose') {
+            steps {
+                script {
+                    echo 'Realizando deploy do ambiente com Docker Compose...'
+                    sh "docker-compose -f ${COMPOSE_FILE} up -d"
+                }
+            }
+        }
+
+        stage('Configurar Monitoramento') {
+            steps {
+                script {
+                    echo 'Configurando monitoramento com Prometheus e Grafana...'
+                    // Validar configurações do Prometheus
+                    sh "test -f ${PROMETHEUS_CONFIG}"
+                    
+                    // Verificar se as dashboards do Grafana estão presentes
+                    sh "test -d ${GRAFANA_DASHBOARD_PATH}"
+                    
+                    echo 'Monitoramento configurado.'
                 }
             }
         }
@@ -40,7 +67,7 @@ pipeline {
     post {
         success {
             script {
-                echo 'Pipeline executada com sucesso! Todos os testes passaram.'
+                echo 'Pipeline executada com sucesso! Ambiente e monitoramento configurados.'
             }
         }
         failure {
@@ -50,7 +77,8 @@ pipeline {
         }
         always {
             script {
-                echo 'Pipeline finalizada. Removendo imagens Docker...'
+                echo 'Limpando ambiente...'
+                sh "docker-compose -f ${COMPOSE_FILE} down || true"
                 sh "docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} || true"
             }
         }
