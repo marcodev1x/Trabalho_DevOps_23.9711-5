@@ -18,15 +18,6 @@ pipeline {
             }
         }
 
-        stage('Parar Containers Existentes') {
-            steps {
-                script {
-                    echo 'Parando containers existentes...'
-                    sh "docker-compose -f ${COMPOSE_FILE} down || true"
-                }
-            }
-        }
-
         stage('Construir Imagens') {
             steps {
                 script {
@@ -49,7 +40,7 @@ pipeline {
     post {
         success {
             script {
-                echo 'Pipeline executada com sucesso! Todos os passos foram concluídos.'
+                echo 'Pipeline executada com sucesso! Todos os testes passaram.'
             }
         }
         failure {
